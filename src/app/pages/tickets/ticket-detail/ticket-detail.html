@@ -1,0 +1,11 @@
+<div *ngIf="ticket">
+
+  <h2>{{ ticket.title }}</h2>
+  <p>{{ ticket.desc }}</p>
+
+  <p>Status: {{ ticket.status }}</p>
+  <p>Priority: {{ ticket.priority }}</p>
+
+  <button (click)="close()">Close</button>
+
+</div>

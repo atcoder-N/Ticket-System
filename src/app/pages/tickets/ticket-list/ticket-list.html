@@ -1,0 +1,25 @@
+<div class="table">
+
+  <h2>All Tickets</h2>
+
+  <table>
+    <tr>
+      <th>Title</th>
+      <th>Status</th>
+      <th>Priority</th>
+      <th>Action</th>
+    </tr>
+
+    <tr *ngFor="let t of tickets">
+      <td>{{ t.title }}</td>
+      <td>{{ t.status }}</td>
+      <td>{{ t.priority }}</td>
+      <td>
+        <button (click)="close(t.id)">Close</button>
+        <button (click)="delete(t.id)">Delete</button>
+      </td>
+    </tr>
+
+  </table>
+
+</div>

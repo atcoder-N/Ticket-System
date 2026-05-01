@@ -1,0 +1,77 @@
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="card red">Total {{ tickets.length }}</div>
+    <div class="card yellow">Open {{ getOpen() }}</div>
+    <div class="card green">Closed {{ getClosed() }}</div>
+  </div>
+
+  <div class="main">
+
+    <!-- LEFT FORM -->
+    <div class="form">
+      <h2>Create Ticket</h2>
+
+      <input [(ngModel)]="title" placeholder="Enter title" />
+
+      <textarea [(ngModel)]="desc" placeholder="Enter description"></textarea>
+
+      <select [(ngModel)]="priority">
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </select>
+
+      <select [(ngModel)]="status">
+        <option value="Open">Open</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Closed">Closed</option>
+      </select>
+
+      <button (click)="add()">Add Ticket</button>
+    </div>
+
+    <!-- RIGHT LIST -->
+    <div class="list">
+
+      <div *ngIf="tickets.length === 0" class="empty">
+        No tickets yet 🚀
+      </div>
+
+      <div class="ticket" *ngFor="let t of tickets">
+
+        <div class="top">
+          <h3>{{ t.title }}</h3>
+          <span class="priority" [ngClass]="t.priority">
+            {{ t.priority }}
+          </span>
+        </div>
+
+        <p>{{ t.desc }}</p>
+
+        <div class="bottom">
+          <span class="status" [ngClass]="t.status">
+            {{ t.status.replace('-', ' ') }}
+          </span>
+
+          <select
+            [value]="t.status.replace('-', ' ')"
+            (change)="updateStatus(t, $any($event.target).value)">
+            <option>Open</option>
+            <option>In Progress</option>
+            <option>Closed</option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <button class="delete" (click)="delete(t)">Delete</button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

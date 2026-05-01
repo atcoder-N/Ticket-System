@@ -1,0 +1,18 @@
+.table {
+  padding: 20px;
+  color: white;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td, th {
+  padding: 10px;
+  border-bottom: 1px solid #334155;
+}
+
+button {
+  margin-right: 5px;
+}
