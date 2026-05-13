@@ -1,26 +1,56 @@
-<div class="container">
+<div class="dashboard">
 
-  <!-- STATS -->
-  <div class="stats">
-    <div class="card red">Total {{ tickets.length }}</div>
-    <div class="card yellow">Open {{ getOpen() }}</div>
-    <div class="card green">Closed {{ getClosed() }}</div>
+  <div class="dashboard-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Welcome back, {{ currentUser?.username }}</p>
+    </div>
+
+    <div class="role-badge">
+      {{ authService.getRole() }}
+    </div>
   </div>
 
-  <div class="main">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span>Total Tickets</span>
+      <h2>{{ getTotal() }}</h2>
+    </div>
 
-    <!-- LEFT FORM -->
-    <div class="form">
+    <div class="stat-card open">
+      <span>Open Tickets</span>
+      <h2>{{ getOpen() }}</h2>
+    </div>
+
+    <div class="stat-card progress">
+      <span>In Progress</span>
+      <h2>{{ getInProgress() }}</h2>
+    </div>
+
+    <div class="stat-card closed">
+      <span>Closed Tickets</span>
+      <h2>{{ getClosed() }}</h2>
+    </div>
+
+    <div class="stat-card high">
+      <span>High Priority</span>
+      <h2>{{ getHighPriority() }}</h2>
+    </div>
+  </div>
+
+  <div class="content-grid">
+
+    <div class="form-card" *ngIf="authService.isAdmin() || authService.isEmployee()">
       <h2>Create Ticket</h2>
 
-      <input [(ngModel)]="title" placeholder="Enter title" />
+      <input [(ngModel)]="title" placeholder="Ticket title" />
 
-      <textarea [(ngModel)]="desc" placeholder="Enter description"></textarea>
+      <textarea [(ngModel)]="desc" placeholder="Ticket description"></textarea>
 
       <select [(ngModel)]="priority">
-        <option value="Low">Low</option>
-        <option value="Medium">Medium</option>
-        <option value="High">High</option>
+        <option value="Low">Low Priority</option>
+        <option value="Medium">Medium Priority</option>
+        <option value="High">High Priority</option>
       </select>
 
       <select [(ngModel)]="status">
@@ -29,47 +59,144 @@
         <option value="Closed">Closed</option>
       </select>
 
-      <button (click)="add()">Add Ticket</button>
+      <select *ngIf="authService.isAdmin()" [(ngModel)]="assignedTo">
+        <option value="support">Assign to IT Support</option>
+      </select>
+
+      <button (click)="add()">Create Ticket</button>
     </div>
 
-    <!-- RIGHT LIST -->
-    <div class="list">
-
-      <div *ngIf="tickets.length === 0" class="empty">
-        No tickets yet 🚀
+    <div class="tickets-card">
+      <div class="section-title">
+        <h2>Recent Tickets</h2>
+        <span>{{ visibleTickets.length }} tickets</span>
       </div>
 
-      <div class="ticket" *ngFor="let t of tickets">
+      <div *ngIf="visibleTickets.length === 0" class="empty">
+        No tickets available.
+      </div>
 
-        <div class="top">
-          <h3>{{ t.title }}</h3>
+      <div class="ticket-item" *ngFor="let t of visibleTickets.slice(0, 6)">
+        <div class="ticket-top">
+          <div>
+            <h3>{{ t.title }}</h3>
+            <p>{{ t.desc }}</p>
+          </div>
+
           <span class="priority" [ngClass]="t.priority">
             {{ t.priority }}
           </span>
         </div>
 
-        <p>{{ t.desc }}</p>
+        <div class="ticket-meta">
+          <span>Created: {{ t.createdBy }}</span>
+          <span>Assigned: {{ t.assignedTo }}</span>
+        </div>
 
-        <div class="bottom">
+        <div class="ticket-bottom">
           <span class="status" [ngClass]="t.status">
             {{ t.status.replace('-', ' ') }}
           </span>
 
           <select
+            *ngIf="authService.isAdmin() || authService.isSupport()"
             [value]="t.status.replace('-', ' ')"
             (change)="updateStatus(t, $any($event.target).value)">
             <option>Open</option>
             <option>In Progress</option>
             <option>Closed</option>
           </select>
-        </div>
 
-        <div class="actions">
-          <button class="delete" (click)="delete(t)">Delete</button>
+          <button
+            *ngIf="authService.isAdmin()"
+            class="delete"
+            (click)="delete(t)">
+            Delete
+          </button>
         </div>
+      </div>
+    </div>
 
+    <div class="activity-card">
+      <h2>Recent Activity</h2>
+
+      <div *ngIf="getRecentActivity().length === 0" class="empty">
+        No recent activity.
       </div>
 
+      <div class="activity" *ngFor="let item of getRecentActivity()">
+        <div class="dot"></div>
+
+        <div>
+          <h4>{{ item.title }}</h4>
+          <p>
+            {{ item.status.replace('-', ' ') }} • {{ item.priority }} Priority
+          </p>
+          <small>
+            {{ item.updatedAt || item.createdAt || 'Recently created' }}
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <div class="analytics-card">
+      <h2>Charts & Analytics</h2>
+
+      <div class="chart-section">
+        <h3>Status Analytics</h3>
+
+        <div class="chart-row">
+          <span>Open</span>
+          <div class="bar">
+            <div class="bar-fill open-bar" [style.width.%]="getStatusPercent(getOpen())"></div>
+          </div>
+          <strong>{{ getOpen() }}</strong>
+        </div>
+
+        <div class="chart-row">
+          <span>In Progress</span>
+          <div class="bar">
+            <div class="bar-fill progress-bar" [style.width.%]="getStatusPercent(getInProgress())"></div>
+          </div>
+          <strong>{{ getInProgress() }}</strong>
+        </div>
+
+        <div class="chart-row">
+          <span>Closed</span>
+          <div class="bar">
+            <div class="bar-fill closed-bar" [style.width.%]="getStatusPercent(getClosed())"></div>
+          </div>
+          <strong>{{ getClosed() }}</strong>
+        </div>
+      </div>
+
+      <div class="chart-section">
+        <h3>Priority Analytics</h3>
+
+        <div class="chart-row">
+          <span>Low</span>
+          <div class="bar">
+            <div class="bar-fill low-bar" [style.width.%]="getPriorityPercent(getLowPriority())"></div>
+          </div>
+          <strong>{{ getLowPriority() }}</strong>
+        </div>
+
+        <div class="chart-row">
+          <span>Medium</span>
+          <div class="bar">
+            <div class="bar-fill medium-bar" [style.width.%]="getPriorityPercent(getMediumPriority())"></div>
+          </div>
+          <strong>{{ getMediumPriority() }}</strong>
+        </div>
+
+        <div class="chart-row">
+          <span>High</span>
+          <div class="bar">
+            <div class="bar-fill high-bar" [style.width.%]="getPriorityPercent(getHighPriority())"></div>
+          </div>
+          <strong>{{ getHighPriority() }}</strong>
+        </div>
+      </div>
     </div>
 
   </div>

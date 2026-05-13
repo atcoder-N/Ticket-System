@@ -1,0 +1,184 @@
+.detail-page {
+  min-height: 100vh;
+  background: #0f172a;
+  color: white;
+  padding: 24px;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.header p {
+  color: #94a3b8;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 9px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.delete {
+  background: #ef4444;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 20px;
+}
+
+.card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 18px;
+  padding: 20px;
+}
+
+.desc {
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.info {
+  margin-top: 20px;
+}
+
+.info p {
+  border-bottom: 1px solid #334155;
+  padding: 10px 0;
+  margin: 0;
+}
+
+.status-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.edit-form label {
+  display: block;
+  margin: 12px 0 6px;
+  font-weight: bold;
+}
+
+.edit-form input,
+.edit-form textarea,
+.edit-form select,
+.comment-box textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: white;
+  box-sizing: border-box;
+}
+
+.edit-form textarea,
+.comment-box textarea {
+  min-height: 90px;
+}
+
+.edit-form button,
+.comment-box button {
+  margin-top: 12px;
+  width: 100%;
+}
+
+.comment {
+  background: #0f172a;
+  padding: 12px;
+  border-radius: 12px;
+  margin-top: 12px;
+}
+
+.comment p {
+  margin: 8px 0;
+  color: #cbd5e1;
+}
+
+.comment small,
+.attachment small {
+  color: #94a3b8;
+  display: block;
+  margin-top: 5px;
+}
+
+.attachment {
+  background: #0f172a;
+  padding: 12px;
+  border-radius: 12px;
+  margin-top: 12px;
+}
+
+.timeline-card {
+  grid-column: 1 / -1;
+}
+
+.timeline {
+  display: flex;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid #334155;
+}
+
+.timeline:last-child {
+  border-bottom: none;
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  background: #2563eb;
+  border-radius: 50%;
+  margin-top: 6px;
+}
+
+.timeline h4 {
+  margin: 0;
+}
+
+.timeline p {
+  margin: 5px 0;
+  color: #cbd5e1;
+}
+
+.timeline small {
+  color: #94a3b8;
+}
+
+.empty {
+  color: #94a3b8;
+  padding: 16px 0;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+}

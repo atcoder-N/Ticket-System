@@ -1,6 +1,32 @@
-<div class="card">
-  <h2>Create Ticket</h2>
+<div class="create-page">
 
-  <input [(ngModel)]="title" placeholder="Enter title" />
-  <button (click)="create()">Submit</button>
+  <div class="card">
+    <h1>Create Ticket</h1>
+    <p>Submit a new support request</p>
+
+    <div *ngIf="error" class="error">
+      {{ error }}
+    </div>
+
+    <label>Title</label>
+    <input [(ngModel)]="title" placeholder="Enter ticket title" />
+
+    <label>Description</label>
+    <textarea [(ngModel)]="desc" placeholder="Enter ticket description"></textarea>
+
+    <label>Priority</label>
+    <select [(ngModel)]="priority">
+      <option value="Low">Low</option>
+      <option value="Medium">Medium</option>
+      <option value="High">High</option>
+    </select>
+
+    <label *ngIf="authService.isAdmin()">Assign To</label>
+    <select *ngIf="authService.isAdmin()" [(ngModel)]="assignedTo">
+      <option value="support">IT Support</option>
+    </select>
+
+    <button (click)="create()">Create Ticket</button>
+  </div>
+
 </div>

@@ -1,10 +1,36 @@
-<div class="login">
+<div class="login-page">
 
-  <h2>Login</h2>
+  <div class="login-card">
+    <h1>Ticket System</h1>
+    <p class="subtitle">Login to continue</p>
 
-  <input [(ngModel)]="username" placeholder="Username" />
-  <input [(ngModel)]="password" type="password" placeholder="Password" />
+    <div class="error" *ngIf="error">
+      {{ error }}
+    </div>
 
-  <button (click)="login()">Login</button>
+    <label>Username</label>
+    <input [(ngModel)]="username" placeholder="Enter username" />
+
+    <label>Password</label>
+    <input [(ngModel)]="password" type="password" placeholder="Enter password" />
+
+    <button class="login-btn" (click)="login()">Login</button>
+
+    <div class="demo-box">
+      <h3>Demo Credentials</h3>
+
+      <button type="button" (click)="fillDemo('admin', 'admin123')">
+        Admin: admin / admin123
+      </button>
+
+      <button type="button" (click)="fillDemo('support', 'support123')">
+        IT Support: support / support123
+      </button>
+
+      <button type="button" (click)="fillDemo('employee', 'employee123')">
+        Employee: employee / employee123
+      </button>
+    </div>
+  </div>
 
 </div>

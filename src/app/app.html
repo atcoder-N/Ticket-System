@@ -1,9 +1,15 @@
-<div class="navbar">
+<div class="navbar" *ngIf="authService.isLoggedIn()">
   <h2>Ticket System</h2>
 
   <div class="nav-links">
     <a routerLink="/dashboard">Dashboard</a>
     <a routerLink="/tickets">View Tickets</a>
+
+    <span>
+      Role: {{ authService.getRole() }}
+    </span>
+
+    <button (click)="authService.logout()">Logout</button>
   </div>
 </div>
 

@@ -1,11 +1,138 @@
-<div *ngIf="ticket">
+<div class="detail-page" *ngIf="ticket; else notFound">
 
-  <h2>{{ ticket.title }}</h2>
-  <p>{{ ticket.desc }}</p>
+  <div class="header">
+    <div>
+      <h1>{{ ticket.title }}</h1>
+      <p>Ticket ID: #{{ ticket.id }}</p>
+    </div>
 
-  <p>Status: {{ ticket.status }}</p>
-  <p>Priority: {{ ticket.priority }}</p>
+    <div class="actions">
+      <button *ngIf="canEdit()" (click)="editMode = !editMode">
+        {{ editMode ? 'Cancel' : 'Edit' }}
+      </button>
 
-  <button (click)="close()">Close</button>
+      <button *ngIf="canDelete()" class="delete" (click)="deleteTicket()">
+        Delete
+      </button>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <div class="card">
+
+      <div *ngIf="!editMode">
+        <p class="desc">{{ ticket.desc }}</p>
+
+        <div class="info">
+          <p><strong>Status:</strong> {{ ticket.status.replace('-', ' ') }}</p>
+          <p><strong>Priority:</strong> {{ ticket.priority }}</p>
+          <p><strong>Created By:</strong> {{ ticket.createdBy }}</p>
+          <p><strong>Assigned To:</strong> {{ ticket.assignedTo }}</p>
+          <p><strong>Created At:</strong> {{ ticket.createdAt }}</p>
+          <p *ngIf="ticket.updatedAt">
+            <strong>Updated At:</strong> {{ ticket.updatedAt }}
+          </p>
+        </div>
+
+        <div class="status-actions" *ngIf="authService.isAdmin() || authService.isSupport()">
+          <button (click)="changeStatus('Open')">Open</button>
+          <button (click)="changeStatus('In-Progress')">In Progress</button>
+          <button (click)="changeStatus('Closed')">Closed</button>
+        </div>
+      </div>
+
+      <div *ngIf="editMode" class="edit-form">
+        <label>Title</label>
+        <input [(ngModel)]="editData.title" />
+
+        <label>Description</label>
+        <textarea [(ngModel)]="editData.desc"></textarea>
+
+        <label>Priority</label>
+        <select [(ngModel)]="editData.priority">
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+
+        <label>Status</label>
+        <select [(ngModel)]="editData.status">
+          <option value="Open">Open</option>
+          <option value="In-Progress">In Progress</option>
+          <option value="Closed">Closed</option>
+        </select>
+
+        <label *ngIf="authService.isAdmin()">Assign To</label>
+        <select *ngIf="authService.isAdmin()" [(ngModel)]="editData.assignedTo">
+          <option value="support">IT Support</option>
+        </select>
+
+        <button (click)="saveEdit()">Save Changes</button>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <h2>Comments</h2>
+
+      <div class="comment-box">
+        <textarea [(ngModel)]="commentText" placeholder="Add comment"></textarea>
+        <button (click)="addComment()">Add Comment</button>
+      </div>
+
+      <div *ngIf="ticket.comments.length === 0" class="empty">
+        No comments yet.
+      </div>
+
+      <div class="comment" *ngFor="let c of ticket.comments">
+        <strong>{{ c.author }}</strong>
+        <p>{{ c.message }}</p>
+        <small>{{ c.createdAt }}</small>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Attachments</h2>
+
+      <input type="file" (change)="onFileSelected($event)" />
+
+      <div *ngIf="ticket.attachments.length === 0" class="empty">
+        No attachments.
+      </div>
+
+      <div class="attachment" *ngFor="let file of ticket.attachments">
+        📎 {{ file.name }}
+        <small>{{ file.uploadedAt }}</small>
+      </div>
+    </div>
+
+    <div class="card timeline-card">
+      <h2>Ticket History</h2>
+
+      <div *ngIf="!ticket.history || ticket.history.length === 0" class="empty">
+        No history available.
+      </div>
+
+      <div class="timeline" *ngFor="let h of ticket.history">
+        <div class="timeline-dot"></div>
+
+        <div>
+          <h4>{{ h.action }}</h4>
+          <p>By: {{ h.by }}</p>
+          <small>{{ h.time }}</small>
+        </div>
+      </div>
+    </div>
+
+  </div>
 
 </div>
+
+<ng-template #notFound>
+  <div class="detail-page">
+    <div class="card">
+      <h2>Ticket not found</h2>
+    </div>
+  </div>
+</ng-template>

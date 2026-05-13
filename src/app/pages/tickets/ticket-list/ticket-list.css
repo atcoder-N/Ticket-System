@@ -1,18 +1,40 @@
-.table {
-  padding: 20px;
+.filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filters input,
+.filters select {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #1e293b;
   color: white;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+.filters input {
+  flex: 1;
 }
 
-td, th {
-  padding: 10px;
-  border-bottom: 1px solid #334155;
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-top: 20px;
 }
 
-button {
-  margin-right: 5px;
+.pagination button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
