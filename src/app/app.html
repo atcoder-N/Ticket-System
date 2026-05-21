@@ -1,4 +1,4 @@
-<div class="navbar" *ngIf="authService.isLoggedIn()">
+<div class="navbar" *ngIf="authService.isLoggedIn() && !isLoginPage()">
   <h2>Ticket System</h2>
 
   <div class="nav-links">
@@ -9,8 +9,15 @@
       Role: {{ authService.getRole() }}
     </span>
 
-    <button (click)="authService.logout()">Logout</button>
+    <button (click)="logout()">Logout</button>
   </div>
+</div>
+
+<div
+  class="toast"
+  *ngIf="toastService.toast"
+  [ngClass]="toastService.toast.type">
+  {{ toastService.toast.message }}
 </div>
 
 <router-outlet></router-outlet>

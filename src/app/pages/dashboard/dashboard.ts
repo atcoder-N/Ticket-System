@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { AuthService } from '../../services/auth';
+import { TicketService, Ticket } from '../../services/ticket.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,19 +16,22 @@ export class Dashboard implements OnInit {
 
   title = '';
   desc = '';
-  priority = 'Medium';
-  status = 'Open';
+  priority: 'Low' | 'Medium' | 'High' = 'Medium';
   assignedTo = 'support';
 
-  tickets: any[] = [];
+  tickets: Ticket[] = [];
 
-  constructor(public authService: AuthService) {}
+  constructor(
+    public authService: AuthService,
+    private ticketService: TicketService
+  ) {}
 
   ngOnInit() {
-    if (typeof window === 'undefined') return;
+    this.loadTickets();
+  }
 
-    const data = localStorage.getItem('tickets');
-    this.tickets = data ? JSON.parse(data) : [];
+  loadTickets() {
+    this.tickets = this.ticketService.getTickets();
   }
 
   get currentUser() {
@@ -99,66 +104,45 @@ export class Dashboard implements OnInit {
     if (!this.title.trim()) return;
     if (!this.currentUser) return;
 
-    const now = new Date().toLocaleString();
+    this.ticketService.addTicket(
+      {
+        title: this.title,
+        desc: this.desc,
+        priority: this.priority,
+        status: 'Open',
+        createdBy: this.currentUser.username,
+        assignedTo: this.assignedTo
+      },
+      this.currentUser.username
+    );
 
-    this.tickets.unshift({
-      id: Date.now(),
-      title: this.title,
-      desc: this.desc,
-      priority: this.priority,
-      status: this.status.replace(' ', '-'),
-      createdBy: this.currentUser.username,
-      assignedTo: this.assignedTo,
-      createdAt: now,
-      comments: [],
-      attachments: [],
-      history: [
-        {
-          action: 'Ticket created',
-          by: this.currentUser.username,
-          time: now
-        }
-      ]
-    });
-
-    this.save();
+    this.loadTickets();
 
     this.title = '';
     this.desc = '';
     this.priority = 'Medium';
-    this.status = 'Open';
     this.assignedTo = 'support';
   }
 
-  save() {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem('tickets', JSON.stringify(this.tickets));
-  }
-
-  updateStatus(t: any, newStatus: string) {
+  updateStatus(t: Ticket, newStatus: string) {
     if (!(this.authService.isAdmin() || this.authService.isSupport())) return;
 
     const user = this.authService.getCurrentUser();
-    const now = new Date().toLocaleString();
+    const status = newStatus.replace(' ', '-') as Ticket['status'];
 
-    t.status = newStatus.replace(' ', '-');
-    t.updatedAt = now;
+    this.ticketService.changeStatus(
+      t.id,
+      status,
+      user?.username || 'System'
+    );
 
-    if (!t.history) t.history = [];
-
-    t.history.push({
-      action: 'Status changed to ' + newStatus,
-      by: user?.username || 'System',
-      time: now
-    });
-
-    this.save();
+    this.loadTickets();
   }
 
-  delete(t: any) {
+  delete(t: Ticket) {
     if (!this.authService.isAdmin()) return;
 
-    this.tickets = this.tickets.filter(x => x.id !== t.id);
-    this.save();
+    this.ticketService.deleteTicket(t.id);
+    this.loadTickets();
   }
 }

@@ -53,12 +53,6 @@
         <option value="High">High Priority</option>
       </select>
 
-      <select [(ngModel)]="status">
-        <option value="Open">Open</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Closed">Closed</option>
-      </select>
-
       <select *ngIf="authService.isAdmin()" [(ngModel)]="assignedTo">
         <option value="support">Assign to IT Support</option>
       </select>

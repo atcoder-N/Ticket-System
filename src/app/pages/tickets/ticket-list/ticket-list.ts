@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+
 import { TicketService, Ticket } from '../../../services/ticket.service';
 import { AuthService } from '../../../services/auth';
+import { ToastService } from '../../../services/toast';
 
 @Component({
   selector: 'app-ticket-list',
@@ -23,9 +25,13 @@ export class TicketList implements OnInit {
   page = 1;
   pageSize = 5;
 
+  showDeleteModal = false;
+  selectedTicketId: number | null = null;
+
   constructor(
     private ticketService: TicketService,
-    public authService: AuthService
+    public authService: AuthService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
@@ -105,12 +111,30 @@ export class TicketList implements OnInit {
     );
 
     this.loadTickets();
+    this.toastService.success('Ticket closed successfully');
   }
 
-  delete(id: number) {
+  openDeleteModal(id: number) {
     if (!this.authService.isAdmin()) return;
 
-    this.ticketService.deleteTicket(id);
+    this.selectedTicketId = id;
+    this.showDeleteModal = true;
+  }
+
+  cancelDelete() {
+    this.selectedTicketId = null;
+    this.showDeleteModal = false;
+  }
+
+  confirmDelete() {
+    if (!this.selectedTicketId) return;
+
+    this.ticketService.deleteTicket(this.selectedTicketId);
     this.loadTickets();
+
+    this.toastService.success('Ticket deleted successfully');
+
+    this.selectedTicketId = null;
+    this.showDeleteModal = false;
   }
 }

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 
 import { TicketService, Ticket } from '../../../services/ticket.service';
 import { AuthService } from '../../../services/auth';
+import { ToastService } from '../../../services/toast';
 
 @Component({
   selector: 'app-ticket-detail',
@@ -19,6 +20,7 @@ export class TicketDetail {
 
   editMode = false;
   commentText = '';
+  showDeleteModal = false;
 
   editData = {
     title: '',
@@ -32,7 +34,8 @@ export class TicketDetail {
     private route: ActivatedRoute,
     private router: Router,
     private ticketService: TicketService,
-    public authService: AuthService
+    public authService: AuthService,
+    private toastService: ToastService
   ) {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.ticket = this.ticketService.getById(id);
@@ -75,6 +78,8 @@ export class TicketDetail {
 
     this.ticket = this.ticketService.getById(this.ticket.id);
     this.editMode = false;
+
+    this.toastService.success('Ticket updated successfully');
   }
 
   changeStatus(status: 'Open' | 'In-Progress' | 'Closed') {
@@ -89,6 +94,8 @@ export class TicketDetail {
     );
 
     this.ticket = this.ticketService.getById(this.ticket.id);
+
+    this.toastService.success('Ticket status updated');
   }
 
   addComment() {
@@ -103,6 +110,8 @@ export class TicketDetail {
 
     this.commentText = '';
     this.ticket = this.ticketService.getById(this.ticket.id);
+
+    this.toastService.success('Comment added');
   }
 
   onFileSelected(event: any) {
@@ -122,12 +131,25 @@ export class TicketDetail {
     });
 
     this.ticket = this.ticketService.getById(this.ticket.id);
+
+    this.toastService.success('Attachment added');
   }
 
-  deleteTicket() {
+  openDeleteModal() {
+    this.showDeleteModal = true;
+  }
+
+  cancelDelete() {
+    this.showDeleteModal = false;
+  }
+
+  confirmDelete() {
     if (!this.ticket) return;
 
     this.ticketService.deleteTicket(this.ticket.id);
+    this.toastService.success('Ticket deleted successfully');
+
+    this.showDeleteModal = false;
     this.router.navigate(['/tickets']);
   }
 }
